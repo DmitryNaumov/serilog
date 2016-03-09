@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using Serilog.Core;
 using Serilog.Events;
+using Serilog.Tests.Support;
 using Xunit;
 
 namespace Serilog.Tests.Sinks.PeriodicBatching
@@ -49,6 +50,31 @@ namespace Serilog.Tests.Sinks.PeriodicBatching
             Thread.Sleep(HugeWait + TinyWait);
 
             Assert.True(sink3.WasCalled);
+        }
+
+        [Fact]
+        public void PreservesLogContext()
+        {
+            var sink = new MockEventSink();
+
+            var logger = new LoggerConfiguration()
+                .Enrich.WithThreadId()
+                .WriteAsyncTo(TinyWait).Sink(sink)
+                .CreateLogger();
+
+            var threadId = Thread.CurrentThread.ManagedThreadId;
+
+            logger.Information("Hello!");
+
+            Thread.Sleep(SmallWait);
+
+            Assert.True(sink.WasCalled);
+
+            var logEvent = sink.Events.First();
+
+            LogEventPropertyValue value;
+            logEvent.Properties.TryGetValue("ThreadId", out value);
+            Assert.Equal(threadId, value?.LiteralValue());
         }
 
         class MockEventSink : ILogEventSink
