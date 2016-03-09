@@ -57,6 +57,8 @@ namespace Serilog.Sinks.PeriodicBatching
         /// <param name="period">The time to wait between checking for event batches.</param>
         protected PeriodicBatchingSink(int batchSizeLimit, TimeSpan period)
         {
+            if (batchSizeLimit <= 0) throw new ArgumentOutOfRangeException(nameof(batchSizeLimit));
+
             _batchSizeLimit = batchSizeLimit;
             _queue = new ConcurrentQueue<LogEvent>();
             _status = new BatchedConnectionStatus(period);
