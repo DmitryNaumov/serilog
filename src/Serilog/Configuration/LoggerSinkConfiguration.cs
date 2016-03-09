@@ -34,7 +34,7 @@ namespace Serilog.Configuration
 
         const string DefaultOutputTemplate = "{Timestamp} [{Level}] {Message}{NewLine}{Exception}";
 
-        internal LoggerSinkConfiguration(LoggerConfiguration loggerConfiguration, Action<ILogEventSink> addSink, Action<LoggerConfiguration> applyInheritedConfiguration)
+        public LoggerSinkConfiguration(LoggerConfiguration loggerConfiguration, Action<ILogEventSink> addSink, Action<LoggerConfiguration> applyInheritedConfiguration)
         {
             if (loggerConfiguration == null) throw new ArgumentNullException(nameof(loggerConfiguration));
             if (addSink == null) throw new ArgumentNullException(nameof(addSink));
